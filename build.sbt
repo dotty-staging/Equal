@@ -1,6 +1,6 @@
 lazy val baseName         = "Equal"
 lazy val baseNameL        = baseName.toLowerCase
-lazy val projectVersion   = "0.1.1-SNAPSHOT"
+lazy val projectVersion   = "0.1.1"
 
 lazy val macrosVersion    = "2.1.0"
 lazy val scalaTestVersion = "2.2.6"

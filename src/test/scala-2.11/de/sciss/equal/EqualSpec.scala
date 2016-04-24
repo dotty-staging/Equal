@@ -21,5 +21,12 @@ class EqualSpec extends FlatSpec with Matchers { me =>
     assertTypeError("""List(1, 2) === ((1, 2))""")
     assertTypeError("""4 !== 5f""")
     assertTypeError(""""hello" === Some("hello")""")
+    assertTypeError("""def contains[A, B](in: Option[A], elem: B): Boolean = in === Some(elem)""")
+  }
+
+  it should "work with abstract types" in {
+    def contains[A](in: Option[A], elem: A): Boolean = in === Some(elem)
+
+    assert(contains(Some(123), 123))
   }
 }

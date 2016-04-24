@@ -22,7 +22,7 @@ To use the library in your project:
 
     "de.sciss" %% "equal" % v
 
-The current version `v` is `"0.1.0"`
+The current version `v` is `"0.1.1"`
 
 ## contributing
 
@@ -42,11 +42,13 @@ Then the following compiles
     Option("foo") !== None
     List(Some(1), None) === Seq(Some(1), None)
     
+    def contains[A](in: Option[A], elem: A): Boolean = in === Some(elem)
+    
 While the following does not:
 
     Vector(1, 2, 3) === Set(1, 2, 3)    // to-do: mysterious error message
     List(1, 2) === ((1, 2))
     4 !== 5f
     "hello" === Some("hello")
-
-There are still limitations, for example abstract type parameters (`List[A]`) do not work yet.
+    
+    def contains[A, B](in: Option[A], elem: B): Boolean = in === Some(elem)

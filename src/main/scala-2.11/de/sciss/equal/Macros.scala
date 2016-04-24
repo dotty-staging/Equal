@@ -28,13 +28,29 @@ object Macros {
   def notEqualsImpl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: blackbox.Context)(b: c.Expr[A]): c.Tree =
     impl[A, B](c: c.type, invert = true)(b)
 
+  private[this] val verbose = false
+
   private[this] def impl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: blackbox.Context, invert: Boolean)
                                                             (b: c.Expr[A]): c.Tree = {
     import c.universe._
+    val aTpe0 = weakTypeOf[A]
+    val bTpe0 = weakTypeOf[B]
+
+    if (verbose) {
+      println(s"Equal: typeOf[A] = $aTpe0; typeOf[B] = $bTpe0")
+    }
+
     def checkTypes(aTpe: Type, bTpe: Type): Unit = {
+      val aSym = aTpe.typeSymbol
+      val bSym = bTpe.typeSymbol
+
+      // skip identical abstract types, such as `A` in `Option[A]`
+      if (aTpe =:= bTpe && !aSym.isClass && !bSym.isClass) return
+
       val baseB = bTpe.baseClasses.collect {
         case sym if sym.isClass => sym.asClass
       }
+
       val names: Set[String] = baseB.map(_.fullName)(breakOut)
 
       // if a primitive is inferred, we're good. otherwise:
@@ -47,14 +63,14 @@ object Macros {
         // exclude refinements and known Java types
         val excl = withoutTopLevel.diff(negativeList)
         if (excl.isEmpty) {
-          c.abort(c.enclosingPosition, s"Inferred type is too generic: `${weakTypeOf[B]}`")
+          c.abort(c.enclosingPosition, s"Inferred type is too generic: `$bTpe0`")
         }
       }
 
       // now (crude) check type parameters
       def collectArgs(in: Type): List[List[Type]] = {
         val all = in /* not in Scala 2.10: .dealias */ match {
-          case RefinedType(parents, _) => parents.map(x => x.asInstanceOf[TypeApi].typeArgs)
+          case RefinedType(parents, _) => parents.map(_.typeArgs)
           case x => x.typeArgs :: Nil
         }
         all.filter(_.nonEmpty)
@@ -78,7 +94,7 @@ object Macros {
       }
     }
 
-    checkTypes(weakTypeOf[A], weakTypeOf[B])
+    checkTypes(aTpe0, bTpe0)
 
     // now simply rewrite as `a == b`
     val q"$conv($a)" = c.prefix.tree
