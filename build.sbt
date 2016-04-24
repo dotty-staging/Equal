@@ -11,7 +11,7 @@ lazy val commonSettings = Seq(
   crossScalaVersions  := Seq("2.11.8", "2.10.6"),
   licenses            := Seq("LGPL v2.1+" -> url("http://www.gnu.org/licenses/lgpl-2.1.txt")),
   scalacOptions      ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xfuture", "-Xlint"),
-  libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+  libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
   libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       // if Scala 2.11+ is used, quasi-quotes are available in the standard distribution
@@ -19,8 +19,8 @@ lazy val commonSettings = Seq(
       // in Scala 2.10, quasi-quotes are provided by macro paradise
       case Some((2, 10)) =>
         Seq(
-          compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
-          "org.scalamacros" %% "quasiquotes" % "2.1.0-M5" cross CrossVersion.binary
+          compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
+          "org.scalamacros" %% "quasiquotes" % "2.1.0" cross CrossVersion.binary
         )
     }
   },
