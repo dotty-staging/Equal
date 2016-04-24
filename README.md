@@ -48,3 +48,5 @@ While the following does not:
     List(1, 2) === ((1, 2))
     4 === 5f
     "hello" === Some("hello")
+
+There are still limitations, for example abstract type parameters (`List[A]`) do not work yet.

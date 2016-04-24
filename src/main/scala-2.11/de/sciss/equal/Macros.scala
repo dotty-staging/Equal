@@ -60,7 +60,6 @@ object Macros {
         ap <- argsA
         bp <- argsB
       } {
-        println(s"a = $aTpe, ap = $ap, b = $bTpe, bp = $bp")
         if (ap.size != bp.size) {
           c.abort(c.enclosingPosition,
             s"Number of type parameters does not match: `$aTpe` (${ap.size}) vs `$bTpe` (${bp.size})")
