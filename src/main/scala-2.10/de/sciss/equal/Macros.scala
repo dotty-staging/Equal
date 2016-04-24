@@ -18,12 +18,19 @@ import scala.language.experimental.macros
 import scala.reflect.macros.Context // blackbox
 
 object Macros {
-  def equalsImpl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: Context)(b: c.Expr[A]): c.Expr[Boolean] /* c.Tree */ = {
+  def equalsImpl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: Context)(b: c.Expr[A]): c.Expr[Boolean] =
+    impl(c, invert = false)(b)
+
+  def notEqualsImpl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: Context)(b: c.Expr[A]): c.Expr[Boolean] =
+    impl(c, invert = true)(b)
+
+  private[this] def impl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: Context, invert: Boolean)
+                                                            (b: c.Expr[A]): c.Expr[Boolean] = {
     import c.universe._
     // the macro does not do anything under Scala 2.10.
     // simply rewrite as `a == b`
     val q"$conv($a)" = c.prefix.tree
-    val tree = q"$a == $b"
+    val tree = if (invert) q"$a != $b" else q"$a == $b"
     c.Expr[Boolean](tree)
   }
 }

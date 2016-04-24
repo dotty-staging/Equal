@@ -6,7 +6,7 @@
 
 ## statement
 
-Equal is a small library for Scala to provide a zero-overhead type-safe equals operator `===`.
+Equal is a small library for Scala to provide a zero-overhead type-safe equals and not-equals operators `===` and `!==`.
 
 It is (C)opyright 2016 by Hanns Holger Rutz. All rights reserved. Equal is released under the [GNU Lesser General Public License](https://raw.github.com/Sciss/Equal/master/LICENSE) v2.1+ and comes with absolutely no warranties. To contact the author, send an email to `contact at sciss.de`.
 
@@ -30,23 +30,23 @@ Please see the file [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## documentation
 
-You import the operator using
+You import the operators using
 
     import de.sciss.equal.Implicits._
     
 Then the following compiles
 
-    Vector(1, 2, 3) === List(1, 2, 3)           // true   
-    "hello" === "world"                         // false
-    4 === 5                                     // false
-    Some("foo") === None                        // false
-    List(Some(1), None) === Seq(Some(1), None)  // true
+    Vector(1, 2, 3) === List(1, 2, 3)   
+    "hello" !== "world"
+    4 !== 5
+    Option("foo") !== None
+    List(Some(1), None) === Seq(Some(1), None)
     
 While the following does not:
 
     Vector(1, 2, 3) === Set(1, 2, 3)    // to-do: mysterious error message
     List(1, 2) === ((1, 2))
-    4 === 5f
+    4 !== 5f
     "hello" === Some("hello")
 
 There are still limitations, for example abstract type parameters (`List[A]`) do not work yet.

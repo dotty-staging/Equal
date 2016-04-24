@@ -17,6 +17,7 @@ import scala.language.experimental.macros
 
 object Implicits {
   implicit class TripleEquals[A](a: A) {
-    def === [B >: A](b: B): Boolean = macro Macros.equalsImpl[A, B]
+    def === [B >: A](b: B): Boolean = macro Macros.equalsImpl   [A, B]
+    def !== [B >: A](b: B): Boolean = macro Macros.notEqualsImpl[A, B]
   }
 }

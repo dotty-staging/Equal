@@ -22,7 +22,14 @@ object Macros {
     "scala.Option", "scala.Tuple2")
   private[this] val negativeList = Set("java.lang.Object", "java.io.Serializable", "<refinement>")
 
-  def equalsImpl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: blackbox.Context)(b: c.Expr[A]): c.Tree = {
+  def equalsImpl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: blackbox.Context)(b: c.Expr[A]): c.Tree =
+    impl[A, B](c: c.type, invert = false)(b)
+
+  def notEqualsImpl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: blackbox.Context)(b: c.Expr[A]): c.Tree =
+    impl[A, B](c: c.type, invert = true)(b)
+
+  private[this] def impl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: blackbox.Context, invert: Boolean)
+                                                            (b: c.Expr[A]): c.Tree = {
     import c.universe._
     def checkTypes(aTpe: Type, bTpe: Type): Unit = {
       val baseB = bTpe.baseClasses.collect {
@@ -75,6 +82,7 @@ object Macros {
 
     // now simply rewrite as `a == b`
     val q"$conv($a)" = c.prefix.tree
-    q"$a == $b"
+    val tree = if (invert) q"$a != $b" else q"$a == $b"
+    tree
   }
 }
