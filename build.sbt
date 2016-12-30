@@ -1,9 +1,11 @@
 lazy val baseName         = "Equal"
 lazy val baseNameL        = baseName.toLowerCase
-lazy val projectVersion   = "0.1.1"
+
+lazy val projectVersion   = "0.1.2"
+lazy val mimaVersion      = "0.1.0"
 
 lazy val macrosVersion    = "2.1.0"
-lazy val scalaTestVersion = "2.2.6"
+lazy val scalaTestVersion = "3.0.1"
 
 lazy val commonSettings = Seq(
   version             := projectVersion,
@@ -11,7 +13,7 @@ lazy val commonSettings = Seq(
   description         := "Simple macro-based type safe equals operator ===",
   homepage            := Some(url(s"https://github.com/Sciss/$baseName")),
   scalaVersion        := "2.11.8",
-  crossScalaVersions  := Seq("2.11.8", "2.10.6"),
+  crossScalaVersions  := Seq("2.12.1", "2.11.8", "2.10.6"),
   licenses            := Seq("LGPL v2.1+" -> url("http://www.gnu.org/licenses/lgpl-2.1.txt")),
   scalacOptions      ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xfuture", "-Xlint"),
   libraryDependencies ++= Seq(
@@ -68,3 +70,6 @@ lazy val publishSettings = Seq(
 lazy val root = Project(id = baseNameL, base = file("."))
   .settings(commonSettings)
   .settings(publishSettings)
+  .settings(
+    mimaPreviousArtifacts := Set("de.sciss" %% baseNameL % mimaVersion)
+  )
