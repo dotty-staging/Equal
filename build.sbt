@@ -1,7 +1,7 @@
 lazy val baseName         = "Equal"
 lazy val baseNameL        = baseName.toLowerCase
 
-lazy val projectVersion   = "0.1.2"
+lazy val projectVersion   = "0.1.3-SNAPSHOT"
 lazy val mimaVersion      = "0.1.0"
 
 lazy val deps = new {
@@ -18,7 +18,7 @@ lazy val commonSettings = Seq(
   organization        := "de.sciss",
   description         := "Simple macro-based type safe equals operator ===",
   homepage            := Some(url(s"https://git.iem.at/sciss/$baseName")),
-  scalaVersion        := "2.12.8",
+  scalaVersion        := "2.13.0-M5",
   crossScalaVersions  := Seq("2.12.8", "2.11.12", "2.13.0-M5"),
   licenses            := Seq("LGPL v2.1+" -> url("http://www.gnu.org/licenses/lgpl-2.1.txt")),
   scalacOptions      ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xfuture", "-Xlint"),

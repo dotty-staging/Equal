@@ -3,22 +3,26 @@ package de.sciss.equal
 import scala.reflect.macros.blackbox
 
 object Macros {
-  private[this] val positiveList = Set("scala.Boolean", "scala.Int", "scala.Long", "scala.Float", "scala.Double",
-    "scala.Option", "scala.Tuple2")
-  private[this] val negativeList = Set("java.lang.Object", "java.io.Serializable", "<refinement>")
+  private[this] val positiveList = Set(
+    "scala.Boolean", "scala.Int", "scala.Long", "scala.Float", "scala.Double", "java.lang.String"
+    )
+  private[this] val topLevelList = Set("scala.Option", "scala.Tuple2")
+  private[this] val negativeList = Set(/* "java.lang.Object", "java.io.Serializable", */ "<refinement>")
 
-  private[this] val skipList = Seq(
+  private[this] val skipList = Set(
     "scala.collection.TraversableLike", "scala.collection.generic.HasNewBuilder", "scala.collection.GenIterable",
     "scala.collection.IterableLike", "scala.collection.generic.GenericTraversableTemplate",
     "scala.collection.GenTraversableOnce", "scala.collection.Traversable",
-    "scala.Immutable, scala.collection.GenTraversable", "scala.collection.immutable.Iterable",
+    "scala.collection.GenTraversable", "scala.collection.immutable.Iterable",
     "scala.collection.GenIterableLike", "scala.collection.Parallelizable", "scala.collection.Iterable",
-    "scala.Equals", "scala.collection.immutable.Traversable", "scala.collection.GenTraversableLike",
+    "scala.collection.immutable.Traversable", "scala.collection.GenTraversableLike",
     "scala.collection.generic.FilterMonadic", "scala.collection.TraversableOnce",
-    "java.io.Serializable", "scala.Any", "scala.Immutable", "scala.collection.AbstractTraversable",
-    "scala.Serializable", "scala.collection.GenTraversable", "scala.collection.GenSeq", "scala.collection.SeqLike",
+    "java.io.Serializable", "scala.collection.AbstractTraversable",
+    "scala.collection.GenTraversable", "scala.collection.GenSeq", "scala.collection.SeqLike",
     "scala.collection.AbstractIterable", "scala.collection.GenSeqLike", "java.lang.Object",
-    "scala.collection.AbstractSeq"
+    "scala.collection.AbstractSeq",
+    // Scala 2.13:
+    "scala.collection.IterableOnceOps", "scala.collection.IterableOnce", "scala.collection.IterableOps"
   )
 
   def equalsImpl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: blackbox.Context)(b: c.Expr[A]): c.Tree =
@@ -27,7 +31,7 @@ object Macros {
   def notEqualsImpl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: blackbox.Context)(b: c.Expr[A]): c.Tree =
     impl[A, B](c: c.type, invert = true)(b)
 
-  private[this] val verbose = true
+  private[this] val verbose = false
 
   private[this] def impl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: blackbox.Context, invert: Boolean)
                                                             (b: c.Expr[A]): c.Tree = {
@@ -63,39 +67,52 @@ object Macros {
       // skip identical abstract types, such as `A` in `Option[A]`
       if (aTpe =:= bTpe && !aSym.isClass && !bSym.isClass) {
         if (verbose) {
-          println(s"matching $aTpe and $bTpe")
+          println(s"matching abstract types $aTpe and $bTpe")
         }
         return Ok
       }
 
-//      val baseA: Seq[ClassSymbol] = aTpe.baseClasses.collect {
-//        case sym if sym.isClass => sym.asClass
-//      }
+      def mkBase(in: Type): Set[ClassSymbol] =
+        in.baseClasses.iterator.collect {
+          case sym if sym.isClass => sym.asClass
+        } .toSet
 
-      val baseB: Seq[ClassSymbol] = bTpe.baseClasses.collect {
-        case sym if sym.isClass => sym.asClass
+      val baseA = mkBase(aTpe)
+      val baseB = mkBase(bTpe)
+
+      val baseCommon0 = baseA intersect baseB
+      val baseCommon = baseCommon0.filterNot { sym =>
+        skipList.contains(sym.fullName)
       }
 
-//      val namesA: Set[String] = baseA.iterator.map(_.fullName).toSet -- skipList
-      val namesB: Set[String] = baseB.iterator.map(_.fullName).toSet -- skipList
+//      if (verbose) println(baseCommon.mkString(s"baseCommon = ", "\n         ", ""))
+
+      //      val namesA: Set[String] = baseA.iterator.map(_.fullName).toSet -- skipList
+      val namesB: Set[String] = baseCommon.map(_.fullName)
 
 //      if (verbose) println(s"namesA = $namesA")
       if (verbose) println(namesB.mkString(s"namesB = ", "\n         ", ""))
 
-      if (/* namesA.isEmpty || */ namesB.isEmpty) return TooGeneric(aTpe, bTpe)
-
       // if a primitive is inferred, we're good. otherwise:
-      if (namesB.intersect(positiveList).isEmpty) {
-        // exclude all such as scala.Product, scala.Equals
-        val withoutTopLevel = namesB.filterNot { n =>
-          val i = n.lastIndexOf('.')
-          i == 5 && n.startsWith("scala")
+      if (namesB.intersect(positiveList).nonEmpty) {
+        if (verbose) {
+          println(s"matching primitive types $aTpe and $bTpe")
         }
-        // exclude refinements and known Java types
-        val excl = withoutTopLevel.diff(negativeList)
-        if (excl.isEmpty) {
-          return TooGeneric(aTpe0, bTpe0) // Some(s"Inferred type is too generic: `$bTpe0`")
-        }
+        return Ok
+      }
+
+      // exclude all such as scala.Product, scala.Equals
+      val withoutTopLevel = namesB.filterNot { n =>
+        val i = n.lastIndexOf('.')
+        i == 5 && n.startsWith("scala") && !topLevelList.contains(n)
+      }
+      // exclude refinements and known Java types
+      val excl = withoutTopLevel.diff(negativeList)
+
+      if (verbose) println(namesB.mkString(s"excl   = ", "\n         ", ""))
+
+      if (excl.isEmpty) {
+        return TooGeneric(aTpe0, bTpe0) // Some(s"Inferred type is too generic: `$bTpe0`")
       }
 
       // now (crude) check type parameters
@@ -136,37 +153,6 @@ object Macros {
       }
 
       res
-
-      //      for {
-//        ap <- argsA
-//        bp <- argsB
-//      } {
-//        if (ap.size != bp.size) {
-//          c.abort(c.enclosingPosition,
-//            s"Number of type parameters does not match: `$aTpe` (${ap.size}) vs `$bTpe` (${bp.size})")
-//        }
-//
-//        (ap zip bp).foreach { case (aTpe1, bTpe1) =>
-//          checkTypes(aTpe1, bTpe1)
-//        }
-//      }
-
-//      val candidates: Seq[(List[Type], List[Type])] = for {
-//        ap <- argsA
-//        bp <- argsB
-//        if ap.size == bp.size
-//      } yield (ap, bp)
-//
-//      if (candidates.isEmpty) {
-//        c.abort(c.enclosingPosition,
-//          s"Number of type parameters does not match: `$aTpe` vs `$bTpe`")
-//      }
-//
-//      candidates.foreach { case (ap, bp) =>
-//        (ap zip bp).foreach { case (aTpe1, bTpe1) =>
-//          checkTypes(aTpe1, bTpe1, level = level + 1)
-//        }
-//      }
     }
 
     val opt = checkTypes(aTpe0, bTpe0, level = 0)
