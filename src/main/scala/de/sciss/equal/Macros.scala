@@ -85,21 +85,19 @@ object Macros {
         skipList.contains(sym.fullName)
       }
 
-//      if (verbose) println(baseCommon.mkString(s"baseCommon = ", "\n         ", ""))
-
-      //      val namesA: Set[String] = baseA.iterator.map(_.fullName).toSet -- skipList
       val namesB: Set[String] = baseCommon.map(_.fullName)
 
-//      if (verbose) println(s"namesA = $namesA")
       if (verbose) println(namesB.mkString(s"namesB = ", "\n         ", ""))
 
-      // if a primitive is inferred, we're good. otherwise:
+      // if a primitive is inferred, we're good.
       if (namesB.intersect(positiveList).nonEmpty) {
         if (verbose) {
           println(s"matching primitive types $aTpe and $bTpe")
         }
         return Ok
       }
+
+      // --- otherwise ---
 
       // exclude all such as scala.Product, scala.Equals
       val withoutTopLevel = namesB.filterNot { n =>
@@ -146,7 +144,7 @@ object Macros {
         }
       }
 
-      val res: Cmp = if (/* cand.isEmpty || */ cand.contains(Ok)) {
+      val res: Cmp = if (cand.isEmpty || cand.contains(Ok)) {
         Ok
       } else {
         cand.collectFirst { case t: TooGeneric => t } .orElse (cand.headOption) .getOrElse(TooGeneric(aTpe, bTpe))
