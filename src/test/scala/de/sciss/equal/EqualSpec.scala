@@ -1,7 +1,18 @@
 package de.sciss.equal
 
+import de.sciss.equal.EqualSpec._
 import org.scalatest.{FlatSpec, Matchers}
 
+import scala.collection.immutable.{IndexedSeq => Vec}
+
+object EqualSpec {
+  final case class ControlValues(seq: Vec[Float])
+
+  sealed trait State { def id: Int }
+  case object Stopped   extends State { final val id = 0 }
+  case object Preparing extends State { final val id = 1 }
+
+}
 class EqualSpec extends FlatSpec with Matchers { me =>
   // disable ScalaTest's own === support
   override def convertToEqualizer[A](left: A): Equalizer[A] = null
@@ -14,6 +25,9 @@ class EqualSpec extends FlatSpec with Matchers { me =>
     assert(4 !== 5)
     assert(Option("foo") !== None)
     assert(Some("foo") !== Some("bar"))
+    assert(Option(ControlValues(Vec(1f, 2f))) !== Option(ControlValues(Vec(1f, 3f))))
+    val st: State = Stopped
+    assert(st === Stopped)
     assert(List(Some(1), None) === Seq(Some(1), None))  // true
   }
 
