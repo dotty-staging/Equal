@@ -22,7 +22,8 @@ object Macros {
     "scala.collection.AbstractIterable", "scala.collection.GenSeqLike", "java.lang.Object",
     "scala.collection.AbstractSeq",
     // Scala 2.13:
-    "scala.collection.IterableOnceOps", "scala.collection.IterableOnce", "scala.collection.IterableOps"
+    "scala.collection.IterableOnceOps", "scala.collection.IterableOnce", "scala.collection.IterableOps",
+    "scala.collection.IterableFactoryDefaults"
   )
 
   def equalsImpl[A: c.WeakTypeTag, B: c.WeakTypeTag](c: blackbox.Context)(b: c.Expr[A]): c.Tree =
