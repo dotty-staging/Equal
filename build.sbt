@@ -19,14 +19,18 @@ lazy val commonSettings = Seq(
   description         := "Simple macro-based type safe equals operator ===",
   homepage            := Some(url(s"https://git.iem.at/sciss/$baseName")),
   scalaVersion        := "2.12.8",
-  crossScalaVersions  := Seq("2.12.8", "2.11.12", "2.13.0-RC1"),
+  crossScalaVersions  := Seq("2.12.8", "2.11.12", "2.13.0-RC2"),
   licenses            := Seq("LGPL v2.1+" -> url("http://www.gnu.org/licenses/lgpl-2.1.txt")),
   scalacOptions      ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xlint", "-Xsource:2.13"),
   libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided
   ),
   libraryDependencies += {
-    "org.scalatest"  %% "scalatest" % deps.test.scalaTest % Test
+    if (scalaVersion.value == "2.13.0-RC2") {
+      "org.scalatest" % "scalatest_2.13.0-RC1" % deps.test.scalaTest % Test
+    } else {
+      "org.scalatest" %% "scalatest" % deps.test.scalaTest % Test
+    }
   },
   libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
