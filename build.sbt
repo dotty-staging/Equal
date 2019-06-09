@@ -9,7 +9,7 @@ lazy val deps = new {
     val macros    = "2.1.0"
   }
   val test = new {
-    val scalaTest = "3.0.8-RC2"
+    val scalaTest = "3.0.8-RC5"
   }
 }
 
@@ -19,15 +19,15 @@ lazy val commonSettings = Seq(
   description         := "Simple macro-based type safe equals operator ===",
   homepage            := Some(url(s"https://git.iem.at/sciss/$baseName")),
   scalaVersion        := "2.12.8",
-  crossScalaVersions  := Seq("2.12.8", "2.11.12", "2.13.0-RC2"),
+  crossScalaVersions  := Seq("2.12.8", "2.11.12", "2.13.0"),
   licenses            := Seq("LGPL v2.1+" -> url("http://www.gnu.org/licenses/lgpl-2.1.txt")),
   scalacOptions      ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xlint", "-Xsource:2.13"),
   libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided
   ),
   libraryDependencies += {
-    if (scalaVersion.value == "2.13.0-RC2") {
-      "org.scalatest" % "scalatest_2.13.0-RC1" % deps.test.scalaTest % Test
+    if (scalaVersion.value == "2.13.0") {
+      "org.scalatest" % "scalatest_2.13.0-RC3" % deps.test.scalaTest % Test
     } else {
       "org.scalatest" %% "scalatest" % deps.test.scalaTest % Test
     }
