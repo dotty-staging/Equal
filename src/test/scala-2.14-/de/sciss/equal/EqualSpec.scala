@@ -1,7 +1,8 @@
 package de.sciss.equal
 
 import de.sciss.equal.EqualSpec._
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.collection.immutable.{IndexedSeq => Vec}
 
@@ -13,7 +14,7 @@ object EqualSpec {
   case object Preparing extends State { final val id = 1 }
 
 }
-class EqualSpec extends FlatSpec with Matchers { me =>
+class EqualSpec extends AnyFlatSpec with Matchers { me =>
   // disable ScalaTest's own === support
   override def convertToEqualizer[A](left: A): Equalizer[A] = null
 
