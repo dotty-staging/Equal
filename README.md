@@ -13,16 +13,20 @@ absolutely no warranties. To contact the author, send an e-mail to `contact at s
 
 __Warning:__ This is not yet thoroughly tested.
 
+__N.B.:__ Currently only Scala 2 on JVM performs extra type-safety checks, whereas Scala.js and Dotty use a
+simple equality check without added type-safety. So make sure you always cross-compile your project with
+Scala 2.12 or 2.13 on the JVM.
+
 ## requirements / installation
 
-This project compiles against Scala 2.13, 2.12, using sbt. The last version to support Scala 2.11 was v0.1.4.
-Note: since Dotty does not support macros, we fall back to regular `==` and `!=`, so there is no extra type safety.
+This project builds with sbt against Scala 2.13, 2.12, Dotty (JVM) and Scala 2.13 (JS).
+The last version to support Scala 2.11 was v0.1.4.
 
 To use the library in your project:
 
     "de.sciss" %% "equal" % v
 
-The current version `v` is `"0.1.5"`
+The current version `v` is `"0.1.6"`
 
 ## contributing
 

@@ -14,6 +14,7 @@
 package de.sciss.equal
 
 object Implicits {
+  /** Note: on Scala.js, the check is trivial and does not add type-safety */
   implicit class TripleEquals[A](a: A) {
     @inline def === [B >: A](b: B): Boolean = a == b
     @inline def !== [B >: A](b: B): Boolean = a != b
