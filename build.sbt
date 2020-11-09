@@ -9,12 +9,12 @@ lazy val deps = new {
     val macros    = "2.1.0"
   }
   val test = new {
-    val scalaTest = "3.2.2"
+    val scalaTest = "3.2.3"
   }
 }
 
 lazy val commonJvmSettings = Seq(
-  crossScalaVersions  := Seq("0.27.0-RC1", "2.13.3", "2.12.12"),
+  crossScalaVersions  := Seq("3.0.0-M1", "2.13.3", "2.12.12"),
   unmanagedSourceDirectories in Compile += {
     val sourceDir = (sourceDirectory in Compile).value
     // println("sourceDir[Compile] = " + sourceDir)
