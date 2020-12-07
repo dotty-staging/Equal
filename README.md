@@ -1,6 +1,6 @@
 # Equal
 
-[![Build Status](https://travis-ci.org/Sciss/Equal.svg?branch=main)](https://travis-ci.org/Sciss/Equal)
+[![Build Status](https://github.com/Sciss/Equal/workflows/Scala%20CI/badge.svg?branch=main)](https://github.com/Sciss/Equal/actions?query=workflow%3A%22Scala+CI%22)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.sciss/equal_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.sciss/equal_2.13)
 
 ## statement
