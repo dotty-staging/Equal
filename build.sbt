@@ -18,12 +18,12 @@ lazy val commonJvmSettings = Seq(
   unmanagedSourceDirectories in Compile += {
     val sourceDir = (sourceDirectory in Compile).value
     // println("sourceDir[Compile] = " + sourceDir)
-    if (isDotty.value) sourceDir / "scala-2.14+" else sourceDir / "scala-2.14-"
+    if (scalaVersion.value.startsWith("3")) sourceDir / "scala-2.14+" else sourceDir / "scala-2.14-"
   },
   unmanagedSourceDirectories in Test += {
     val sourceDir = (sourceDirectory in Test).value
     // println("sourceDir[Test] = " + sourceDir)
-    if (isDotty.value) sourceDir / "scala-2.14+" else sourceDir / "scala-2.14-"
+    if (scalaVersion.value.startsWith("3")) sourceDir / "scala-2.14+" else sourceDir / "scala-2.14-"
   },
 )
 
@@ -40,7 +40,7 @@ lazy val commonSettings = Seq(
   licenses            := Seq("LGPL v2.1+" -> url("http://www.gnu.org/licenses/lgpl-2.1.txt")),
   scalacOptions      ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xlint", "-Xsource:2.13"),
   libraryDependencies ++= {
-    if (isDotty.value) Nil else Seq(
+    if (scalaVersion.value.startsWith("3")) Nil else Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided
     )
   },
