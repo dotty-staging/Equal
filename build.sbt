@@ -9,12 +9,12 @@ lazy val deps = new {
     val macros    = "2.1.0"
   }
   val test = new {
-    val scalaTest = "3.2.4"
+    val scalaTest = "3.2.7"
   }
 }
 
 lazy val commonJvmSettings = Seq(
-  crossScalaVersions  := Seq("3.0.0-RC1", "2.13.4", "2.12.13"),
+  crossScalaVersions  := Seq("3.0.0-RC2", "2.13.5", "2.12.13"),
   unmanagedSourceDirectories in Compile += {
     val sourceDir = (sourceDirectory in Compile).value
     // println("sourceDir[Compile] = " + sourceDir)
@@ -36,7 +36,7 @@ lazy val commonSettings = Seq(
 //  organization        := "de.sciss",
   description         := "Simple macro-based type safe equals operator ===",
   homepage            := Some(url(s"https://git.iem.at/sciss/$baseName")),
-  scalaVersion        := "2.13.4",
+  scalaVersion        := "2.13.5",
   licenses            := Seq("LGPL v2.1+" -> url("http://www.gnu.org/licenses/lgpl-2.1.txt")),
   scalacOptions      ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xlint", "-Xsource:2.13"),
   libraryDependencies ++= {
